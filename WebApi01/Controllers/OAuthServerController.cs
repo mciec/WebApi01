@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -25,55 +28,26 @@ namespace WebApi01.Controllers
     {
         [HttpPost]
         [Route("Authorize")]
-        public async Task<ObjectResult> Authorize(UserCredentials userCredentials)
+        public async Task<string> Authorize(UserCredentials userCredentials)
         {
             if (userCredentials.Name == "mciec")
             {
-                var identity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme);
-                identity.AddClaims(new List<Claim>() { new Claim(ClaimTypes.Name, userCredentials.Name), new Claim(ClaimTypes.Role, "user") });
-                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
-                return StatusCode(200, $"user {userCredentials.Name} authenticated");
+                var key = Encoding.ASCII.GetBytes("YourKey-2374-OFFKDI940NG7:56753253-tyuw-5769-0921-kfirox29zoxv");
+                var JWToken = new JwtSecurityToken(
+                    issuer: "proper issuer",
+                    audience: "michalC",
+                    claims: new List<Claim>() { new Claim(ClaimTypes.Name, userCredentials.Name), new Claim(ClaimTypes.Role, "user") },
+                    notBefore: new DateTimeOffset(DateTime.Now).DateTime,
+                    expires: new DateTimeOffset(DateTime.Now.AddDays(1)).DateTime,
+                    signingCredentials: new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+                );
+                var token = new JwtSecurityTokenHandler().WriteToken(JWToken);
+                return token;
             }
             else
             {
-                return StatusCode(400, "Invalid user/password");
+                return null;
             }
-
-
-        }
-
-
-
-        // GET: api/OAuthServer
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
-
-        // GET: api/OAuthServer/5
-        [HttpGet("{id}", Name = "Get")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST: api/OAuthServer
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
-
-        // PUT: api/OAuthServer/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE: api/ApiWithActions/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
         }
     }
 }
