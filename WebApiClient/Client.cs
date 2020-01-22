@@ -30,10 +30,18 @@ namespace WebApiClient
         public async Task<string> GetResource()
         {
             _client = new HttpClient();
-            HttpRequestMessage req = new HttpRequestMessage(HttpMethod.Get, @"https://localhost:44371/Api");
-            req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _bearerToken);
-            var resp = await _client.SendAsync(req);
-            return await resp.Content.ReadAsStringAsync();
+            HttpRequestMessage req1 = new HttpRequestMessage(HttpMethod.Get, @"https://localhost:44371/Api/Get1");
+            req1.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _bearerToken);
+            var resp1 = await _client.SendAsync(req1);
+            var respContent1 = await resp1.Content.ReadAsStringAsync();
+
+            HttpRequestMessage req2 = new HttpRequestMessage(HttpMethod.Get, @"https://localhost:44371/Api/Get2");
+            req2.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _bearerToken);
+            var resp2 = await _client.SendAsync(req2);
+            var respContent2 = await resp2.Content.ReadAsStringAsync();
+
+            return respContent2;
+
         }
 
 

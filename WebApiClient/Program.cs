@@ -7,14 +7,14 @@ namespace WebApiClient
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Press any key to authorize");
+            //Console.WriteLine("Press any key to authorize");
 
             Client client = new Client();
             var token = client.Authorize();
-            //token.Wait();
+            token.Wait(-1);
 
             var resource = client.GetResource();
-            //resource.Wait();
+            resource.Wait(-1);
 
             Console.WriteLine(resource.Result);
 

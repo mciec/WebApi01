@@ -52,15 +52,15 @@ namespace WebApi01
                 {
                     ValidateIssuerSigningKey = true,
                     //Same Secret key will be used while creating the token
-                    IssuerSigningKey = new SymmetricSecurityKey(SecretKey), 
+                    IssuerSigningKey = new SymmetricSecurityKey(SecretKey),
                     ValidateIssuer = true,
                     //Usually, this is your application base URL
-                    ValidIssuer = "proper issuer", 
+                    ValidIssuer = "proper issuer",
                     ValidateAudience = true,
                     //Here, we are creating and using JWT within the same application.
                     //In this case, base URL is fine.
                     //If the JWT is created using a web service, then this would be the consumer URL.
-                    ValidAudience = "michalC", 
+                    ValidAudience = "michalC",
                     RequireExpirationTime = true,
                     ValidateLifetime = true,
                     ClockSkew = TimeSpan.Zero
@@ -118,6 +118,14 @@ namespace WebApi01
             app.UseAuthentication();
 
             app.UseAuthorization();
+
+            app.Use(async (context, next) =>
+            {
+                var principal = context.User as ClaimsPrincipal;
+                var accessToken = principal?.Claims
+                  .FirstOrDefault(c => c.Type == "access_token");
+                await next();
+            });
 
             app.UseEndpoints(endpoints =>
             {
