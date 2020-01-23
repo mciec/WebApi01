@@ -7,10 +7,12 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using WebApi02.Models;
 
 namespace WebApi02
 {
@@ -38,7 +40,10 @@ namespace WebApi02
                     options.Cookie.Name = "MyAuthCookie";
                     options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Lax;
                 });
+            var connCfg = Configuration.GetConnectionString("MySqlServer");
+            services.AddDbContext<UsersContext>(options => options.UseSqlServer(connCfg));
         }
+
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
